@@ -42,11 +42,11 @@ function DifferenceDispay(props) {
                 label: "Your Answer"
             })
             let sw = {
-                lat: Math.max(answer.getPosition().lat(), guess.getPosition().lat()),
+                lat: Math.min(answer.getPosition().lat(), guess.getPosition().lat()),
                 lng: Math.min(answer.getPosition().lng(), guess.getPosition().lng())
             };
             let ne = {
-                lat: Math.min(answer.getPosition().lat(), guess.getPosition().lat()),
+                lat: Math.max(answer.getPosition().lat(), guess.getPosition().lat()),
                 lng: Math.max(answer.getPosition().lng(), guess.getPosition().lng())
             };
             map.fitBounds(new maps.LatLngBounds(sw, ne));

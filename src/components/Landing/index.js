@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useContext } from 'react';
 import * as Mapillary from 'mapillary-js';
 import 'mapillary-js/dist/mapillary.min.css';
 import { Loader } from "@googlemaps/js-api-loader"
-// import axios from 'axios';
 import cities from '../../cities.json';
 import axios from 'axios';
 import DifferenceDispay from '../DifferenceDisplay';
@@ -40,12 +39,6 @@ function Landing(props) {
     const [round, setRound] = useState(1);
     const [keys, setKeys] = useState(null);
 
-    // const loader = useMemo(() => new Loader({
-    //     apiKey: process.env.REACT_APP_GOOGLE_API_KEY,
-    //     version: "weekly",
-    //     libraries: ['geometry']
-    // }), []);
-
     useEffect(() => {
         viewer.current = new Mapillary.Viewer({
             container: 'mapillaryjs',
@@ -66,9 +59,13 @@ function Landing(props) {
             // eslint-disable-next-line no-undef
             const maps = google.maps;
             let map = new maps.Map(document.getElementById("picker"), {
-                center: { lat: -34.397, lng: 150.644 },
-                zoom: 8,
+                center: { lat: 0, lng: 30 },
+                zoom: 2,
             });
+
+            map.controls[maps.ControlPosition.BOTTOM_CENTER].push(
+                document.getElementById("confirm")
+            );
 
             let geocoder = new maps.Geocoder();
             geocoder.geocode({ 'address': cities[Math.floor(Math.random() * 81)].city }, function (results, status) {
@@ -95,10 +92,6 @@ function Landing(props) {
             });
 
 
-            map.controls[maps.ControlPosition.BOTTOM_CENTER].push(
-                document.getElementById("confirm")
-            );
-
             currentMarker.current = new maps.Marker();
             currentMarker.current.setMap(map);
 
@@ -115,7 +108,7 @@ function Landing(props) {
         loader.current.load().then(() => {
             // eslint-disable-next-line no-undef
             const maps = google.maps;
-            setScore(score + Math.round(maps.geometry.spherical.computeDistanceBetween(new maps.LatLng(answer), guess)));
+            setScore(score + Math.round(maps.geometry.spherical.computeDistanceBetween(new maps.LatLng(answer), guess) / 1000));
         })
     }
 

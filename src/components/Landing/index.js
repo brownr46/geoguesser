@@ -72,13 +72,27 @@ function Landing(props) {
                 if (status === 'OK') {
                     let lat = results[0].geometry.location.lat();
                     let lng = results[0].geometry.location.lng();
-                    axios.get('https://a.mapillary.com/v3/images', {
-                        params: {
-                            client_id: process.env.REACT_APP_MAPILLARY_API_KEY,
-                            bbox: [lng - 0.1, lat - 0.1, lng + 0.1, lat + 0.1],
-                            min_quality_score: 3
+                    Promise.all([
+                        axios.get('https://a.mapillary.com/v3/images', {
+                            params: {
+                                client_id: process.env.REACT_APP_MAPILLARY_API_KEY,
+                                bbox: [lng - 0.1, lat - 0.1, lng + 0.1, lat + 0.1],
+                                min_quality_score: 3
+                            }
+                        }), axios.get('https://a.mapillary.com/v3/images', {
+                            params: {
+                                client_id: process.env.REACT_APP_MAPILLARY_API_KEY,
+                                bbox: [lng - 0.1, lat - 0.1, lng + 0.1, lat + 0.1],
+                                min_quality_score: 3,
+                                pano: true
+                            }
+                        })
+                    ]).then((coords) => {
+                        if (coords[1].data.features.length !== 0) {
+                            coords = coords[1];
+                        } else {
+                            coords = coords[0];
                         }
-                    }).then((coords) => {
                         setKeys(coords.data.features);
                         if (coords.data.features.length === 0) {
                             setForceUpdate(!forceUpdate);
@@ -90,7 +104,6 @@ function Landing(props) {
                     console.error(status);
                 }
             });
-
 
             currentMarker.current = new maps.Marker();
             currentMarker.current.setMap(map);
@@ -113,7 +126,7 @@ function Landing(props) {
     }
 
     const nextKey = () => {
-        viewer.current.moveToKey(keys[Math.floor(Math.random() * 200)].properties.key);
+        viewer.current.moveToKey(keys[Math.floor(Math.random() * keys.length)].properties.key);
     }
 
     const nextRound = () => {
